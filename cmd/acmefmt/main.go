@@ -8,6 +8,9 @@
 //
 // Registered formatters are:
 /*
+	// Dockerfile -> dockfmt
+	// BUILD -> buildifier
+
 	// goimports
 	".go": goimports{},
 
@@ -25,6 +28,9 @@
 
 	// rustfmt
 	".rs": rustfmt{},
+
+	// buildifier
+	".bzl": buildifier{},
 */
 package main
 
@@ -61,6 +67,9 @@ var (
 
 		// rustfmt
 		".rs": rustfmt{},
+
+		// buildifier
+		".bzl": buildifier{},
 	}
 )
 
@@ -86,11 +95,23 @@ type formatter interface {
 }
 
 func filter(e acme.LogEvent) {
-	ext := path.Ext(e.Name)
-	if fmtr, ok := fmtrs[ext]; ok && e.Op == "put" {
-		reformat(e.ID, e.Name, fmtr)
+	if e.Op != "put" {
+		return
 	}
 
+	_, file := path.Split(e.Name)
+	ext := path.Ext(file)
+
+	switch file {
+	case "Dockerfile":
+		reformat(e.ID, e.Name, dockfmt{})
+	case "BUILD", "BUCK":
+		reformat(e.ID, e.Name, buildifier{})
+	default:
+		if fmtr, ok := fmtrs[ext]; ok {
+			reformat(e.ID, e.Name, fmtr)
+		}
+	}
 }
 
 func reformat(id int, name string, formatter formatter) {

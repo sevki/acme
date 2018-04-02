@@ -8,7 +8,7 @@ import (
 	"bufio"
 	"errors"
 	"io"
-)
+) 
 
 type importReader struct {
 	b    *bufio.Reader
