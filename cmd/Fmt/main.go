@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Acmefmt watches acme for a variety files being written.
+// Fmt	 watches acme for a variety files being written.
 // Each time a file is written, acmefmt finds the relevant formatter
 // and formats and writes back the file.
 //
